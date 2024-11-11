@@ -1,59 +1,50 @@
 import { propertiesModel } from "../models/propeties-model";
 import { ColaboradorModel } from "../models/colaborador-model";
+import { cliente } from "../data/colaboradores-data";
 
-const dataBase: ColaboradorModel[] = [
-    {
-        id: 1,
-        properties: {
-            name: "Matheus",
-            functionCollaborator: "Assistente de TI",
-            day: 14,
-            month: 10
-        },
-
-    },
-    {
-        id: 2,
-        properties: {
-            name: "Matias",
-            functionCollaborator: "Analisata de TI",
-            day: 16,
-            month: 6
-        },
-    },
-];
-//Busca todos os colaboradores no data base!
+// Função para carregar todos os colaboradores do banco de dados
 export const findAllColaboradores = async (): Promise<ColaboradorModel[]> => {
-    return dataBase;
+  const dataBase = await cliente.query('SELECT * FROM pessoas');
+  return dataBase.rows; // Retorna todos os colaboradores
 };
-//Busca o calaborador que for passado o ID no data base!
-export const findColaboradoresById = async (id:number): Promise<ColaboradorModel | undefined> => {
-    return dataBase.find(colaborador => colaborador.id === id);
-};
-//Insere o Colabordor no data base!
-export const insertColaborador = async (colaborador: ColaboradorModel) => {
-    dataBase.push(colaborador);
-};
-//Deleta o Colabordor no data base!
-export const deleteOneColaborador = async (id: number) => {
-    //Busca para saber se o ID passado está no data base!
-    const index = dataBase.findIndex(colaborador => colaborador.id === id);
-    //Verifica se o index é diferente de -1, pois se caso o id não existi a respota de cima seria -1!
-    if(index !== -1) {
-        dataBase.splice(index, 1);
-        return true
-    }
 
-    return false
-}
+// Busca o colaborador pelo ID no banco de dados
+export const findColaboradoresById = async (id: number): Promise<ColaboradorModel | undefined> => {
+  const dataBase = await cliente.query('SELECT * FROM pessoas WHERE id = $1', [id]);
+  return dataBase.rows[0]; // Retorna o colaborador encontrado ou undefined
+};
 
-export const findAndModifyColaborador = async(id: number, properties: propertiesModel): Promise<ColaboradorModel> => {
-    //Busca para saber se o ID passado está no data base!
-    const colaboradorIndex = dataBase.findIndex(colaborador => colaborador.id === id);
-    //Verifica se o index é diferente de -1, pois se caso o id não existi a respota de cima seria -1!
-    if (colaboradorIndex !== -1) {
-        //Faz a aterção das propriedades!
-        dataBase[colaboradorIndex].properties = properties;
-    }
-    return dataBase[colaboradorIndex];
-}
+// Insere um colaborador no banco de dados
+export const insertColaborador = async (colaborador: ColaboradorModel): Promise<void> => {
+  const query = `
+    INSERT INTO pessoas (name, functioncollaborator, day, month)
+    VALUES ($1, $2, $3, $4) RETURNING id;
+  `;
+  const values = [colaborador.name, colaborador.functioncollaborator, colaborador.day, colaborador.month];
+  const dataBase = await cliente.query(query, values);
+
+  console.log('Novo colaborador inserido com ID:', dataBase.rows[0].id); // Logando o id do novo colaborador
+};
+
+// Deleta um colaborador pelo ID no banco de dados
+export const deleteOneColaborador = async (id: number): Promise<boolean> => {
+  const query = 'DELETE FROM pessoas WHERE id = $1';
+  const result = await cliente.query(query, [id]);
+
+  return result.rowCount > 0; // Retorna true se o colaborador foi deletado, caso contrário false
+};
+
+// Busca e modifica um colaborador pelo ID e propriedades fornecidas
+export const findAndModifyColaborador = async (id: number, properties: propertiesModel): Promise<ColaboradorModel | undefined> => {
+  const query = `
+    UPDATE pessoas
+    SET name = $1, functioncollaborator = $2, day = $3, month = $4
+    WHERE id = $5
+    RETURNING *;
+  `;
+  const values = [properties.name, properties.functioncollaborator, properties.day, properties.month, id];
+
+  const dataBase = await cliente.query(query, values);
+  
+  return dataBase.rows[0]; // Retorna o colaborador atualizado ou undefined
+};

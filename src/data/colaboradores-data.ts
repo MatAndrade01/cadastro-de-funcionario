@@ -1,4 +1,3 @@
-const cors = require('cors');
 const { Client } = require('pg');
 
 export const cliente = new Client({
