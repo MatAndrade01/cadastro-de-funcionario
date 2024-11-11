@@ -1,6 +1,6 @@
 /*Meu routers.ts vai ler meu controller */
 import { Router } from "express";
-import { deleteColaborador, getColaborador, getColaboradorById, postColaborador } from "./controller/colaborador-controller";
+import { deleteColaborador, getColaborador, getColaboradorById, postColaborador, updateColaborador } from "./controller/colaborador-controller";
 //Gerencia minhas rotas!
 const router = Router();
  //Faz o get trazendo o arquivo importador do controller: getColaborador!
@@ -12,4 +12,5 @@ router.post("/colaborador", postColaborador);
  //Faz o delete para o meu dataBase importando o controller: deleteColaborador!
 router.delete("/colaborador/:id", deleteColaborador);
 
+router.patch("/colaborador/:id", updateColaborador);
 export default router;

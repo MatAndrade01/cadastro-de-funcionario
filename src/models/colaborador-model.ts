@@ -1,8 +1,10 @@
-export interface ColoaboradorModel {
+export interface ColaboradorModel {
     id:number;
-    name: string;
-    functionCollaborator: string;
-    day: number;
-    month: number;
+    properties: {
+        name: string;
+        functionCollaborator: string;
+        day: number;
+        month: number;
+    }
 };
 
