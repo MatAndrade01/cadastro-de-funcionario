@@ -24,7 +24,16 @@ export const findAllColaboradores = async (): Promise<ColoaboradorModel[]> => {
 export const findColaboradoresById = async (id:number): Promise<ColoaboradorModel | undefined> => {
     return dataBase.find(colaborador => colaborador.id === id);
 };
-//insere o Colabordor no data base!
+//Insere o Colabordor no data base!
 export const insertColaborador = async (colaborador: ColoaboradorModel) => {
     dataBase.push(colaborador);
 };
+//Deleta o Colabordor no data base!
+export const deleteOneColaborador = async (id: number) => {
+    //Busca para saber se o ID passado está no data base!
+    const index = dataBase.findIndex(colaborador => colaborador.id === id);
+    //Verifica se o index é diferente de -1, pois se caso o id não existi a respota de cima seria -1!
+    if(index !== -1) {
+        dataBase.splice(index, 1);
+    }
+}

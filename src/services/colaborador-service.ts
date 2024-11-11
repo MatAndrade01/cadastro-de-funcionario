@@ -47,3 +47,12 @@ export const createColaboradorService = async(colabrador: ColoaboradorModel) => 
 
     return response;
 }
+//Exporta para meu Controller!
+export const deleteColaboradorService = async(id:number) => {
+    let response = null;
+    //Recebe a resposta do meu repositore
+    await ColaboradorRespostory.deleteOneColaborador(id);
+    //Responde meu body com a mensagem "Deleted"!
+    response = ok({menssage: "Deleted"});
+    return response;
+};

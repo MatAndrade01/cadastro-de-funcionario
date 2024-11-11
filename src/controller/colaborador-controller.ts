@@ -1,6 +1,6 @@
 /*Meu controller vai ler meu service */
 import { request, Request, Response } from "express";
-import { createColaboradorService, getColaboradorByIdService, getColaboradorService } from "../services/colaborador-service";
+import { createColaboradorService, deleteColaboradorService, getColaboradorByIdService, getColaboradorService } from "../services/colaborador-service";
 import { noContent } from "../utils/http-helper";
 
 //Exporta o getColaborador para usar na minha routes.ts!
@@ -34,3 +34,12 @@ export const postColaborador = async (request: Request, response: Response) => {
         response.status(httpResponse.statusCode).json(httpResponse.body);
     }
 };
+//Exporta o deleteColaborador para usar na minha routes.ts!
+export const deleteColaborador = async(request: Request, response: Response) => {
+    //Pega o id e converte para interito!
+    const id = parseInt(request.params.id);
+    //Manda o id para o service!
+    const httpResponse = await deleteColaboradorService(id);
+    //Tras a resposta do status e do body em JSON!
+    response.status(httpResponse.statusCode).json(httpResponse.body);
+}
