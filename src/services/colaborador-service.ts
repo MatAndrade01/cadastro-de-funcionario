@@ -1,7 +1,9 @@
 /*Meu service ler o meu utils e meu repositores, para manipular meu status e faz a regras de negocios!*/
+import { response } from "express";
+import { ColoaboradorModel } from "../models/colaborador-model";
 import * as ColaboradorRespostory from "../repositories/colaborador-repositories";
-import { noContent, ok } from "../utils/http-helper";
-
+import { badRequest, created, noContent, ok } from "../utils/http-helper";
+//Exporta para meu Controller!
 export const getColaboradorService = async () => {
     //chama o banco de dados local
     const data = await ColaboradorRespostory.findAllColaboradores();
@@ -15,7 +17,7 @@ export const getColaboradorService = async () => {
     };
     return httpResponse;
 };
-
+//Exporta para meu Controller!
 export const getColaboradorByIdService = async (id:number) => {
     //chama o banco de dados local
     const data = await ColaboradorRespostory.findColaboradoresById(id);
@@ -30,7 +32,18 @@ export const getColaboradorByIdService = async (id:number) => {
     }
     return httpResponse;
 };
+//Exporta para meu Controller!
+export const createColaboradorService = async(colabrador: ColoaboradorModel) =>  {
+    let response = null
+    //Verifica se está vazio!
+    if(Object.keys(colabrador).length !== 0) {
+        //Insere o colaborador
+        await ColaboradorRespostory.insertColaborador(colabrador);
+        response = created();
+    }else{
+        //Apresneta um erro
+        response = badRequest();
+    }
 
-export const createColaboradorService = async() =>  {
-    
+    return response;
 }
